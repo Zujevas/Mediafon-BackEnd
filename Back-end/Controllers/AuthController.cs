@@ -20,13 +20,16 @@ namespace Back_end.Controllers
         {
             var user = new IdentityUser
             {
-                UserName = registerModel.UserName,
+                UserName = registerModel.Username,
                 PasswordHash = registerModel.Password
             };
 
             var result = await _userManager.CreateAsync(user, user.PasswordHash!);
-            if(result.Succeeded) 
-                return Ok("Registration successful");
+            if (result.Succeeded)
+            {
+                // Return a structured response indicating success
+                return Ok(new { isSuccessful = true, message = "Registration successful" });
+            }
 
             var errors = result.Errors.Select(e => e.Description);
             return BadRequest(new { Errors = errors });

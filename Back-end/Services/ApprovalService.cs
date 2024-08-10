@@ -1,5 +1,7 @@
 ﻿
+using Back_end.Hubs;
 using Back_end.Persistance;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Channels;
 
 namespace Back_end.Services
@@ -8,11 +10,13 @@ namespace Back_end.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly Channel<Guid> _channel;
+        private readonly IHubContext<RequestHub> _requestHub;
 
-        public ApprovalService(IServiceProvider serviceProvider)
+        public ApprovalService(IServiceProvider serviceProvider, IHubContext<RequestHub> requestHub)
         {
             _serviceProvider = serviceProvider;
             _channel = Channel.CreateUnbounded<Guid>();
+            _requestHub = requestHub;
         }
 
         public async Task AddRequestToQueue(Guid requestId)
@@ -25,11 +29,11 @@ namespace Back_end.Services
         {
             await foreach (var requestId in _channel.Reader.ReadAllAsync(stoppingToken))
             {
-                await PriccesRequest(requestId);
+                await ProccesRequest(requestId);
             }
         }
 
-        private async Task PriccesRequest(Guid requestId)
+        private async Task ProccesRequest(Guid requestId)
         {
             await Task.Delay(TimeSpan.FromMinutes(1));
 
@@ -41,6 +45,8 @@ namespace Back_end.Services
             {
                 request.Status = "įvykdytas";
                 await dbContext.SaveChangesAsync();
+
+                await _requestHub.Clients.All.SendAsync("ReceiveRequestUpdate");
             }
                 
         }

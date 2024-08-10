@@ -1,5 +1,7 @@
-﻿using Back_end.Models;
+﻿using Back_end.Hubs;
+using Back_end.Models;
 using Back_end.Persistance;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Services
@@ -8,10 +10,12 @@ namespace Back_end.Services
     {
         private readonly Context _context;
         private readonly IApprovalService _approvalService;
-        public RequestService(Context context, IApprovalService approvalService)
+        private readonly IHubContext<RequestHub> _requestHub;
+        public RequestService(Context context, IApprovalService approvalService, IHubContext<RequestHub> requestHub)
         {
             _context = context;
             _approvalService = approvalService;
+            _requestHub = requestHub;
         }
 
         public async Task<List<Request>> getAllRequests()
@@ -35,6 +39,8 @@ namespace Back_end.Services
             await _context.SaveChangesAsync();
 
             await _approvalService.AddRequestToQueue(newRequest.Id);
+
+            await _requestHub.Clients.All.SendAsync("ReceiveRequestUpdate");
 
             return newRequest;
         }
