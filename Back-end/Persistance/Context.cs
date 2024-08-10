@@ -1,23 +1,19 @@
 ﻿using Back_end.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Persistance
 {
-    public class Context : DbContext
+    public class Context : IdentityDbContext
     {
         protected readonly IConfiguration _configuration;
 
-        public Context(IConfiguration configuration)
+        public Context(DbContextOptions<Context> options) : base(options)
         {
-            _configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(_configuration.GetConnectionString("DbConnectionString"));
-        }
+       
 
-       // public DbSet<user> Users { get; set; }
         public DbSet<Request> Requests { get; set; }
     }
 }

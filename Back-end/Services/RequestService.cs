@@ -7,9 +7,11 @@ namespace Back_end.Services
     public class RequestService : IRequestService
     {
         private readonly Context _context;
-        public RequestService(Context context)
+        private readonly IApprovalService _approvalService;
+        public RequestService(Context context, IApprovalService approvalService)
         {
             _context = context;
+            _approvalService = approvalService;
         }
 
         public async Task<List<Request>> getAllRequests()
@@ -25,12 +27,14 @@ namespace Back_end.Services
             {
                 Type = request.Type,
                 Message = request.Message,
-                Status = "pending",
+                Status = "pateiktas",
                 Date = DateTime.UtcNow
             };
 
             _context.Requests.Add(newRequest);
             await _context.SaveChangesAsync();
+
+            await _approvalService.AddRequestToQueue(newRequest.Id);
 
             return newRequest;
         }

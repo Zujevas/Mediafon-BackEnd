@@ -1,5 +1,6 @@
 ﻿using Back_end.Models;
 using Back_end.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace Back_end.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> getAllRequests()
         {
             var result = await _requestService.getAllRequests();
@@ -25,6 +27,7 @@ namespace Back_end.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> createRequest(CreateRequestDto request)
         {
             var newRequest = await _requestService.createRequest(request);
