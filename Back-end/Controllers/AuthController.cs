@@ -27,7 +27,6 @@ namespace Back_end.Controllers
             var result = await _userManager.CreateAsync(user, user.PasswordHash!);
             if (result.Succeeded)
             {
-                // Return a structured response indicating success
                 return Ok(new { isSuccessful = true, message = "Registration successful" });
             }
 

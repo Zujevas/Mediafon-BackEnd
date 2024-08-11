@@ -17,7 +17,7 @@ namespace Back_end.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("all")]
         [Authorize]
         public async Task<IActionResult> getAllRequests()
         {

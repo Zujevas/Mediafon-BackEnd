@@ -12,8 +12,6 @@ namespace Back_end.Persistance
         {
         }
 
-       
-
         public DbSet<Request> Requests { get; set; }
     }
 }

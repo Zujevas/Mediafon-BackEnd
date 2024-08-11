@@ -20,7 +20,9 @@ namespace Back_end.Services
 
         public async Task<List<Request>> getAllRequests()
         {
-            var result = await _context.Requests.ToListAsync();
+            var result = await _context.Requests
+            .OrderByDescending(r => r.Date)
+            .ToListAsync();
 
             return result;
         }
